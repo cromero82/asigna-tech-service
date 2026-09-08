@@ -5,6 +5,7 @@ import { AppLogger } from '../../config/logger';
 import { RecursoNoEncontradoError } from '../../exceptions/recurso-no-encontrado.error';
 import { CatalogoRepository } from '../../repositories/catalogo.repository';
 import { SolicitudInsert, SolicitudRepository } from '../../repositories/solicitud.repository';
+import { validarDominioSolicitud } from '../../validators/solicitud.dominio.validator';
 import { SolicitudService } from '../solicitud.service';
 
 export class SolicitudServiceImpl implements SolicitudService {
@@ -34,6 +35,7 @@ export class SolicitudServiceImpl implements SolicitudService {
   async crear(request: CrearSolicitudRequest): Promise<SolicitudResponse> {
     this.logger.info({ titulo: request.titulo }, 'SolicitudService.crear inicio');
     const datos = await this.resolverAlta(request);
+    await validarDominioSolicitud(this.catalogoRepository, datos);
     const id = await this.solicitudRepository.crear(datos);
     const creada = await this.obtenerPorId(id);
     this.logger.info({ id }, 'SolicitudService.crear fin');
@@ -45,7 +47,10 @@ export class SolicitudServiceImpl implements SolicitudService {
     request: ActualizarSolicitudRequest
   ): Promise<SolicitudResponse> {
     this.logger.info({ id }, 'SolicitudService.actualizar inicio');
-    await this.solicitudRepository.actualizar(id, this.mapearActualizacion(request));
+    await this.obtenerPorId(id);
+    const datos = this.mapearActualizacion(request);
+    await validarDominioSolicitud(this.catalogoRepository, datos);
+    await this.solicitudRepository.actualizar(id, datos);
     const actualizada = await this.obtenerPorId(id);
     this.logger.info({ id }, 'SolicitudService.actualizar fin');
     return actualizada;

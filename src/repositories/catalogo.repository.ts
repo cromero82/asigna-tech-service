@@ -138,6 +138,64 @@ export class CatalogoRepository {
     return result.rows[0].id;
   }
 
+  async buscarTipoTecnicoPorId(id: number): Promise<CatalogoItemResponse | null> {
+    const result = await this.pool.query<CatalogoItemResponse>(
+      `SELECT id, nombre FROM tipo_tecnico WHERE id = $1 AND activo = TRUE`,
+      [id]
+    );
+    return result.rows[0] ?? null;
+  }
+
+  async buscarTipoServicioPorId(id: number): Promise<TipoServicioItemResponse | null> {
+    const result = await this.pool.query<TipoServicioItemResponse>(
+      `SELECT id, nombre, tipo_tecnico_id AS "tipoTecnicoId"
+       FROM tipo_servicio WHERE id = $1 AND activo = TRUE`,
+      [id]
+    );
+    return result.rows[0] ?? null;
+  }
+
+  async buscarTecnicoPorId(id: number): Promise<TecnicoItemResponse | null> {
+    const result = await this.pool.query<TecnicoItemResponse>(
+      `SELECT id, nombre, correo, tipo_tecnico_id AS "tipoTecnicoId"
+       FROM tecnico WHERE id = $1 AND activo = TRUE`,
+      [id]
+    );
+    return result.rows[0] ?? null;
+  }
+
+  async buscarObjetoPorId(id: number): Promise<CatalogoItemResponse | null> {
+    const result = await this.pool.query<CatalogoItemResponse>(
+      `SELECT id, nombre FROM objeto WHERE id = $1 AND activo = TRUE`,
+      [id]
+    );
+    return result.rows[0] ?? null;
+  }
+
+  async buscarEstadoPorId(id: number): Promise<EstadoPrioridadResultadoResponse | null> {
+    const result = await this.pool.query<EstadoPrioridadResultadoResponse>(
+      `SELECT id, codigo, nombre FROM estado_solicitud WHERE id = $1 AND activo = TRUE`,
+      [id]
+    );
+    return result.rows[0] ?? null;
+  }
+
+  async buscarPrioridadPorId(id: number): Promise<EstadoPrioridadResultadoResponse | null> {
+    const result = await this.pool.query<EstadoPrioridadResultadoResponse>(
+      `SELECT id, codigo, nombre FROM prioridad WHERE id = $1 AND activo = TRUE`,
+      [id]
+    );
+    return result.rows[0] ?? null;
+  }
+
+  async buscarResultadoPorId(id: number): Promise<EstadoPrioridadResultadoResponse | null> {
+    const result = await this.pool.query<EstadoPrioridadResultadoResponse>(
+      `SELECT id, codigo, nombre FROM resultado_solicitud WHERE id = $1 AND activo = TRUE`,
+      [id]
+    );
+    return result.rows[0] ?? null;
+  }
+
   async crearTipoTecnico(
     nombre: string,
     descripcion: string | null

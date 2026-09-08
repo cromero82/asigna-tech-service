@@ -48,6 +48,26 @@ Content-Type: application/json
   "resultadoId": null
 }
 
+### 400 — título vacío
+POST http://localhost:3000/api/solicitudes
+Content-Type: application/json
+
+{
+  "titulo": "",
+  "tipoTecnicoId": 2,
+  "tipoServicioId": 3
+}
+
+### 412 — tipo de servicio de otra especialidad
+POST http://localhost:3000/api/solicitudes
+Content-Type: application/json
+
+{
+  "titulo": "Servicio cruzado",
+  "tipoTecnicoId": 1,
+  "tipoServicioId": 3
+}
+
 ### Eliminar (borrado lógico)
 DELETE http://localhost:3000/api/solicitudes/1
 

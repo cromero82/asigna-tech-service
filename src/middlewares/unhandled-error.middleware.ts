@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 import { AppLogger } from '../config/logger';
 import { RecursoNoEncontradoError } from '../exceptions/recurso-no-encontrado.error';
+import { ReglaNegocioError } from '../exceptions/regla-negocio.error';
 import { ValidacionError } from '../exceptions/validacion.error';
 
 function esErrorPostgres(err: unknown): err is { code: string } {
   return typeof err === 'object' && err !== null && 'code' in err;
+}
+
+function esJsonInvalido(err: unknown): boolean {
+  return err instanceof SyntaxError && 'body' in err;
 }
 
 export function unhandledErrorMiddleware(logger: AppLogger) {
@@ -22,6 +27,18 @@ export function unhandledErrorMiddleware(logger: AppLogger) {
     if (err instanceof ValidacionError) {
       logger.info({ err }, 'validación de catálogo o solicitud');
       res.status(400).json({ status: 400, message: err.message });
+      return;
+    }
+
+    if (err instanceof ReglaNegocioError) {
+      logger.info({ err }, 'regla de negocio');
+      res.status(412).json({ status: 412, message: err.message });
+      return;
+    }
+
+    if (esJsonInvalido(err)) {
+      logger.info({ err }, 'JSON inválido');
+      res.status(400).json({ status: 400, message: 'JSON inválido' });
       return;
     }
 

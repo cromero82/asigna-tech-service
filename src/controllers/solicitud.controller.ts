@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { AppLogger } from '../config/logger';
-import { ActualizarSolicitudRequest } from '../dtos/request/actualizar-solicitud.request';
-import { CrearSolicitudRequest } from '../dtos/request/crear-solicitud.request';
 import { SolicitudService } from '../services/solicitud.service';
+import {
+  validarActualizarSolicitud,
+  validarCrearSolicitud
+} from '../validators/solicitud.request.validator';
 
 export class SolicitudController {
   constructor(
@@ -63,7 +65,7 @@ export class SolicitudController {
   ): Promise<void> => {
     this.logger.info('SolicitudController.crear inicio');
     try {
-      const creada = await this.solicitudService.crear(req.body as CrearSolicitudRequest);
+      const creada = await this.solicitudService.crear(validarCrearSolicitud(req.body));
       res.status(201).json(creada);
     } catch (error) {
       this.logger.error({ err: error }, 'SolicitudController.crear error');
@@ -86,7 +88,7 @@ export class SolicitudController {
       }
       const actualizada = await this.solicitudService.actualizar(
         id,
-        req.body as ActualizarSolicitudRequest
+        validarActualizarSolicitud(req.body)
       );
       res.status(200).json(actualizada);
     } catch (error) {
