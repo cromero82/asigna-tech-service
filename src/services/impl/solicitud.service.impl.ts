@@ -74,7 +74,7 @@ export class SolicitudServiceImpl implements SolicitudService {
       tipoTecnicoId: request.tipoTecnicoId,
       tipoServicioId: request.tipoServicioId,
       tecnicoId,
-      objetoId: request.objetoId,
+      objetoId: request.objetoId ?? null,
       estadoId,
       prioridadId,
       resultadoId: request.resultadoId ?? null
@@ -89,7 +89,7 @@ export class SolicitudServiceImpl implements SolicitudService {
       tipoTecnicoId: request.tipoTecnicoId,
       tipoServicioId: request.tipoServicioId,
       tecnicoId: request.tecnicoId ?? null,
-      objetoId: request.objetoId,
+      objetoId: request.objetoId ?? null,
       estadoId: request.estadoId,
       prioridadId: request.prioridadId,
       resultadoId: request.resultadoId ?? null

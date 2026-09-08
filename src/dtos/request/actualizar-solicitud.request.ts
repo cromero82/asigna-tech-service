@@ -5,7 +5,7 @@ export interface ActualizarSolicitudRequest {
   tipoTecnicoId: number;
   tipoServicioId: number;
   tecnicoId?: number | null;
-  objetoId: number;
+  objetoId?: number | null;
   estadoId: number;
   prioridadId: number;
   resultadoId?: number | null;

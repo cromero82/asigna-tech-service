@@ -13,8 +13,8 @@ interface SolicitudRow {
   tipo_servicio_nombre: string;
   tecnico_id: number | null;
   tecnico_nombre: string | null;
-  objeto_id: number;
-  objeto_nombre: string;
+  objeto_id: number | null;
+  objeto_nombre: string | null;
   estado_id: number;
   estado_codigo: string;
   estado_nombre: string;
@@ -57,7 +57,7 @@ const SELECT_SOLICITUD = `
   INNER JOIN tipo_tecnico tt ON tt.id = s.tipo_tecnico_id
   INNER JOIN tipo_servicio ts ON ts.id = s.tipo_servicio_id
   LEFT JOIN tecnico t ON t.id = s.tecnico_id
-  INNER JOIN objeto o ON o.id = s.objeto_id
+  LEFT JOIN objeto o ON o.id = s.objeto_id
   INNER JOIN estado_solicitud e ON e.id = s.estado_id
   INNER JOIN prioridad p ON p.id = s.prioridad_id
   LEFT JOIN resultado_solicitud r ON r.id = s.resultado_id
@@ -70,7 +70,7 @@ export interface SolicitudInsert {
   tipoTecnicoId: number;
   tipoServicioId: number;
   tecnicoId: number | null;
-  objetoId: number;
+  objetoId: number | null;
   estadoId: number;
   prioridadId: number;
   resultadoId: number | null;
@@ -176,7 +176,9 @@ function mapRow(row: SolicitudRow): SolicitudResponse {
     tecnico: row.tecnico_id
       ? { id: row.tecnico_id, nombre: row.tecnico_nombre ?? '' }
       : null,
-    objeto: { id: row.objeto_id, nombre: row.objeto_nombre },
+    objeto: row.objeto_id
+      ? { id: row.objeto_id, nombre: row.objeto_nombre ?? '' }
+      : null,
     estado: {
       id: row.estado_id,
       nombre: row.estado_nombre,

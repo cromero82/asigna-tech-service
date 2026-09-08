@@ -10,6 +10,7 @@ export class CatalogoController {
 
   register(router: Router): void {
     router.get('/api/tipos-tecnico', this.tiposTecnico);
+    router.get('/api/servicios', this.servicios);
     router.get('/api/tipos-servicio', this.tiposServicio);
     router.get('/api/tecnicos', this.tecnicos);
     router.get('/api/objetos', this.objetos);
@@ -31,6 +32,22 @@ export class CatalogoController {
       next(error);
     } finally {
       this.logger.info('CatalogoController.tiposTecnico fin');
+    }
+  };
+
+  private servicios = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    this.logger.info('CatalogoController.servicios inicio');
+    try {
+      res.status(200).json(await this.catalogoService.listarServicios());
+    } catch (error) {
+      this.logger.error({ err: error }, 'CatalogoController.servicios error');
+      next(error);
+    } finally {
+      this.logger.info('CatalogoController.servicios fin');
     }
   };
 

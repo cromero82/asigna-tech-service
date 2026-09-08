@@ -21,3 +21,9 @@ export interface TecnicoItemResponse {
   correo: string | null;
   tipoTecnicoId: number;
 }
+
+export interface ServicioGrupoResponse {
+  id: number;
+  nombre: string;
+  tiposServicio: TipoServicioItemResponse[];
+}

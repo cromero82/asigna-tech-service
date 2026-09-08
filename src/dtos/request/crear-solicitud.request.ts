@@ -5,7 +5,7 @@ export interface CrearSolicitudRequest {
   tipoTecnicoId: number;
   tipoServicioId: number;
   tecnicoId?: number | null;
-  objetoId: number;
+  objetoId?: number | null;
   estadoId?: number | null;
   prioridadId?: number | null;
   resultadoId?: number | null;

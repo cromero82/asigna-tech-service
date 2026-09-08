@@ -2,9 +2,17 @@ import { Pool } from 'pg';
 import {
   CatalogoItemResponse,
   EstadoPrioridadResultadoResponse,
+  ServicioGrupoResponse,
   TecnicoItemResponse,
   TipoServicioItemResponse
 } from '../dtos/response/catalogo.response';
+
+type ServicioFila = {
+  especialidadId: number;
+  especialidadNombre: string;
+  tipoServicioId: number;
+  tipoServicioNombre: string;
+};
 
 export class CatalogoRepository {
   constructor(private readonly pool: Pool) {}
@@ -14,6 +22,39 @@ export class CatalogoRepository {
       `SELECT id, nombre FROM tipo_tecnico WHERE activo = TRUE ORDER BY nombre`
     );
     return result.rows;
+  }
+
+  async listarServicios(): Promise<ServicioGrupoResponse[]> {
+    const result = await this.pool.query<ServicioFila>(
+      `SELECT
+         tt.id AS "especialidadId",
+         tt.nombre AS "especialidadNombre",
+         ts.id AS "tipoServicioId",
+         ts.nombre AS "tipoServicioNombre"
+       FROM tipo_tecnico tt
+       INNER JOIN tipo_servicio ts
+         ON ts.tipo_tecnico_id = tt.id AND ts.activo = TRUE
+       WHERE tt.activo = TRUE
+       ORDER BY tt.nombre, ts.nombre`
+    );
+    const grupos = new Map<number, ServicioGrupoResponse>();
+    for (const fila of result.rows) {
+      let grupo = grupos.get(fila.especialidadId);
+      if (!grupo) {
+        grupo = {
+          id: fila.especialidadId,
+          nombre: fila.especialidadNombre,
+          tiposServicio: []
+        };
+        grupos.set(fila.especialidadId, grupo);
+      }
+      grupo.tiposServicio.push({
+        id: fila.tipoServicioId,
+        nombre: fila.tipoServicioNombre,
+        tipoTecnicoId: fila.especialidadId
+      });
+    }
+    return [...grupos.values()];
   }
 
   async listarTiposServicio(tipoTecnicoId?: number): Promise<TipoServicioItemResponse[]> {

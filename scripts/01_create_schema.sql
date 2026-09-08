@@ -60,7 +60,7 @@ CREATE TABLE tecnico (
 
 CREATE TABLE tipo_servicio (
     id              SERIAL PRIMARY KEY,
-    nombre          VARCHAR(120) NOT NULL UNIQUE,
+    nombre          VARCHAR(120) NOT NULL,
     descripcion     VARCHAR(255),
     tipo_tecnico_id INT NOT NULL,
     activo          BOOLEAN NOT NULL DEFAULT TRUE,
@@ -68,10 +68,12 @@ CREATE TABLE tipo_servicio (
     actualizado_en  TIMESTAMPTZ NOT NULL DEFAULT now(),
     CONSTRAINT fk_tipo_servicio_tipo_tecnico
         FOREIGN KEY (tipo_tecnico_id) REFERENCES tipo_tecnico (id)
-        ON UPDATE CASCADE ON DELETE RESTRICT
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT uq_tipo_servicio_nombre_especialidad UNIQUE (nombre, tipo_tecnico_id)
 );
 
 -- tecnico_id nullable: solicitud sin asignar (estado PENDIENTE).
+-- objeto_id nullable: solicitud sin objeto asociado.
 -- resultado_id nullable: solo al cerrar (CERRADA).
 CREATE TABLE solicitud (
     id               SERIAL PRIMARY KEY,
@@ -81,7 +83,7 @@ CREATE TABLE solicitud (
     tipo_tecnico_id  INT NOT NULL,
     tipo_servicio_id INT NOT NULL,
     tecnico_id       INT,
-    objeto_id        INT NOT NULL,
+    objeto_id        INT,
     estado_id        INT NOT NULL,
     prioridad_id     INT NOT NULL,
     resultado_id     INT,

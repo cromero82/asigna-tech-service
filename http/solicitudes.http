@@ -14,8 +14,7 @@ Content-Type: application/json
   "observaciones": null,
   "tipoTecnicoId": 2,
   "tipoServicioId": 3,
-  "tecnicoId": null,
-  "objetoId": 3
+  "tecnicoId": null
 }
 
 ### Crear asignada (Ana López, impresoras)
@@ -53,6 +52,7 @@ Content-Type: application/json
 DELETE http://localhost:3000/api/solicitudes/1
 
 ### Catálogos
+GET http://localhost:3000/api/servicios
 GET http://localhost:3000/api/tipos-tecnico
 GET http://localhost:3000/api/tipos-servicio?tipoTecnicoId=1
 GET http://localhost:3000/api/tecnicos?tipoTecnicoId=1

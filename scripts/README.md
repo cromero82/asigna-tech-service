@@ -21,6 +21,28 @@ PGPASSWORD='***' psql -h localhost -p 5432 -U romax-admin -d asigna_tech_db -f s
 PGPASSWORD='***' psql -h localhost -p 5432 -U romax-admin -d asigna_tech_db -f scripts/02_seed.sql
 ```
 
+## Ampliar catálogo de servicios (BD ya creada)
+
+Cambia el UNIQUE de `tipo_servicio` a `(nombre, tipo_tecnico_id)` e inserta especialidades y tipos faltantes:
+
+```bash
+PGPASSWORD='***' psql -h localhost -p 5432 -U romax-admin -d asigna_tech_db -f scripts/03_seed_servicios.sql
+```
+
+## Renombrar especialidades (BD ya creada)
+
+Quita el prefijo `Técnico en…` (`Impresoras`, `Android`, `iOS`, …):
+
+```bash
+PGPASSWORD='***' psql -h localhost -p 5432 -U romax-admin -d asigna_tech_db -f scripts/04_rename_especialidades.sql
+```
+
+## Objeto opcional en solicitud (BD ya creada)
+
+```bash
+PGPASSWORD='***' psql -h localhost -p 5432 -U romax-admin -d asigna_tech_db -f scripts/05_objeto_opcional.sql
+```
+
 ## Verificar
 
 ```bash

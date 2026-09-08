@@ -1,6 +1,7 @@
 import {
   CatalogoItemResponse,
   EstadoPrioridadResultadoResponse,
+  ServicioGrupoResponse,
   TecnicoItemResponse,
   TipoServicioItemResponse
 } from '../../dtos/response/catalogo.response';
@@ -18,6 +19,13 @@ export class CatalogoServiceImpl implements CatalogoService {
     this.logger.info('CatalogoService.listarTiposTecnico inicio');
     const lista = await this.catalogoRepository.listarTiposTecnico();
     this.logger.info({ total: lista.length }, 'CatalogoService.listarTiposTecnico fin');
+    return lista;
+  }
+
+  async listarServicios(): Promise<ServicioGrupoResponse[]> {
+    this.logger.info('CatalogoService.listarServicios inicio');
+    const lista = await this.catalogoRepository.listarServicios();
+    this.logger.info({ total: lista.length }, 'CatalogoService.listarServicios fin');
     return lista;
   }
 

@@ -12,7 +12,7 @@ export interface SolicitudResponse {
   tipoTecnico: CatalogoRefResponse;
   tipoServicio: CatalogoRefResponse;
   tecnico: CatalogoRefResponse | null;
-  objeto: CatalogoRefResponse;
+  objeto: CatalogoRefResponse | null;
   estado: CatalogoRefResponse;
   prioridad: CatalogoRefResponse;
   resultado: CatalogoRefResponse | null;
