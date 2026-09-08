@@ -12,7 +12,10 @@ const alta = {
 describe('HTTP solicitudes y health', () => {
   it('GET /health 200 y 503', async () => {
     const up = crearAppPrueba();
-    await request(up.app).get('/health').expect(200, { status: 'UP', database: 'UP' });
+    const res = await request(up.app).get('/health').expect(200);
+    expect(res.body).toMatchObject({ status: 'UP', database: 'UP' });
+    expect(typeof res.body.uptimeSeconds).toBe('number');
+    expect(res.body.environment).toBeDefined();
 
     const down = crearAppPrueba({
       healthService: {
@@ -76,6 +79,33 @@ describe('HTTP solicitudes y health', () => {
     });
     await request(app).get('/api/solicitudes').expect(500);
     await request(app).get('/health').expect(500);
+  });
+
+  it('aplica cabeceras OWASP, CORS y métricas', async () => {
+    const { app } = crearAppPrueba();
+    const health = await request(app)
+      .get('/health')
+      .set('Origin', 'http://localhost:4200')
+      .expect(200);
+    expect(health.headers['x-content-type-options']).toBe('nosniff');
+    expect(health.headers['x-powered-by']).toBeUndefined();
+    expect(health.headers['access-control-allow-origin']).toBe('http://localhost:4200');
+
+    const metrics = await request(app).get('/metrics').expect(200);
+    expect(metrics.body.httpRequestsTotal).toBeGreaterThanOrEqual(1);
+    expect(metrics.body.httpRequestsByStatus['200']).toBeGreaterThanOrEqual(1);
+  });
+
+  it('rechaza un JSON demasiado grande', async () => {
+    const { app } = crearAppPrueba();
+    await request(app)
+      .post('/api/solicitudes')
+      .send({
+        titulo: 'x'.repeat(40_000),
+        tipoTecnicoId: 1,
+        tipoServicioId: 2
+      })
+      .expect(413, { status: 413, message: 'Cuerpo demasiado grande' });
   });
 
   it('publica OpenAPI', async () => {

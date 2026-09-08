@@ -1,2 +1,5 @@
 ### Health (equivalente a Actuator)
 GET http://localhost:3000/health
+
+### Métricas HTTP en memoria
+GET http://localhost:3000/metrics

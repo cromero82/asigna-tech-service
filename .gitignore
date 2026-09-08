@@ -48,7 +48,7 @@ web_modules/
 *.tsbuildinfo
 /dist/
 
-# Local DB password (never commit)
+# Local DB password (legacy; prefer .env)
 src/config/secrets.local.ts
 
 # Este repo documenta comandos en Markdown (el gitignore global ignora *.md)

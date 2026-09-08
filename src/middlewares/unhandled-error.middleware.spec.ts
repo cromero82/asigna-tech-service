@@ -68,6 +68,13 @@ describe('unhandledErrorMiddleware', () => {
     });
   });
 
+  it('mapea cuerpo demasiado grande a 413', () => {
+    const res = respuestaMock();
+    handler({ type: 'entity.too.large', status: 413 }, req, res, next);
+    expect(res.statusCode).toBe(413);
+    expect(res.body).toEqual({ status: 413, message: 'Cuerpo demasiado grande' });
+  });
+
   it('envuelve el resto en 500', () => {
     const res = respuestaMock();
     handler(new Error('boom'), req, res, next);

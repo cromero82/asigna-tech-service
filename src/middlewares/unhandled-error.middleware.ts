@@ -12,6 +12,14 @@ function esJsonInvalido(err: unknown): boolean {
   return err instanceof SyntaxError && 'body' in err;
 }
 
+function esCuerpoGrande(err: unknown): boolean {
+  if (typeof err !== 'object' || err === null) {
+    return false;
+  }
+  const e = err as { type?: string; status?: number; statusCode?: number };
+  return e.type === 'entity.too.large' || e.status === 413 || e.statusCode === 413;
+}
+
 export function unhandledErrorMiddleware(logger: AppLogger) {
   return (err: unknown, _req: Request, res: Response, _next: NextFunction): void => {
     if (res.headersSent) {
@@ -39,6 +47,12 @@ export function unhandledErrorMiddleware(logger: AppLogger) {
     if (esJsonInvalido(err)) {
       logger.info({ err }, 'JSON inválido');
       res.status(400).json({ status: 400, message: 'JSON inválido' });
+      return;
+    }
+
+    if (esCuerpoGrande(err)) {
+      logger.info('cuerpo demasiado grande');
+      res.status(413).json({ status: 413, message: 'Cuerpo demasiado grande' });
       return;
     }
 

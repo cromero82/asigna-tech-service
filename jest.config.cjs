@@ -10,8 +10,7 @@ module.exports = {
     '!src/**/*.spec.ts',
     '!src/test/**',
     '!src/server.ts',
-    '!src/config/secrets.local.ts',
-    '!src/config/secrets.local.example.ts'
+    '!src/config/secrets.local.ts'
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'text-summary', 'html'],

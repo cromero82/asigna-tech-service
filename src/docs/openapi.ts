@@ -195,7 +195,7 @@ export const openapiDocument: JsonObject = {
   },
   servers: [{ url: 'http://localhost:3000', description: 'Local' }],
   tags: [
-    { name: 'Salud', description: 'Equivalente a Actuator /health' },
+    { name: 'Salud', description: 'Equivalente a Actuator /health y métricas básicas' },
     { name: 'Solicitudes', description: 'CRUD de solicitudes' },
     { name: 'Servicios', description: 'Árbol especialidad → tipo de servicio' },
     { name: 'Especialidades' },
@@ -215,7 +215,12 @@ export const openapiDocument: JsonObject = {
             content: {
               'application/json': {
                 schema: { $ref: '#/components/schemas/Health' },
-                example: { status: 'UP', database: 'UP' }
+                example: {
+                  status: 'UP',
+                  database: 'UP',
+                  uptimeSeconds: 12,
+                  environment: 'development'
+                }
               }
             }
           },
@@ -225,6 +230,22 @@ export const openapiDocument: JsonObject = {
               'application/json': {
                 schema: { $ref: '#/components/schemas/Health' },
                 example: { status: 'DOWN', database: 'DOWN' }
+              }
+            }
+          }
+        }
+      }
+    },
+    '/metrics': {
+      get: {
+        tags: ['Salud'],
+        summary: 'Contadores HTTP en memoria (equivalente liviano a Micrometer)',
+        responses: {
+          200: {
+            description: 'Métricas del proceso',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/Metrics' }
               }
             }
           }
@@ -421,7 +442,22 @@ export const openapiDocument: JsonObject = {
         required: ['status', 'database'],
         properties: {
           status: { type: 'string', enum: ['UP', 'DOWN'] },
-          database: { type: 'string', enum: ['UP', 'DOWN'] }
+          database: { type: 'string', enum: ['UP', 'DOWN'] },
+          uptimeSeconds: { type: 'integer', minimum: 0 },
+          environment: { type: 'string', example: 'development' }
+        }
+      },
+      Metrics: {
+        type: 'object',
+        required: ['uptimeSeconds', 'httpRequestsTotal', 'httpRequestsByStatus'],
+        properties: {
+          uptimeSeconds: { type: 'integer', minimum: 0 },
+          httpRequestsTotal: { type: 'integer', minimum: 0 },
+          httpRequestsByStatus: {
+            type: 'object',
+            additionalProperties: { type: 'integer' },
+            example: { '200': 4 }
+          }
         }
       },
       CatalogoRef: {

@@ -9,10 +9,10 @@ Requisito: **Node.js 24+**. En esta máquina se verificó con `node -v`.
 ```bash
 cd asigna-tech-service
 node -v
-cp src/config/secrets.local.example.ts src/config/secrets.local.ts
+cp .env.example .env
 ```
 
-Editar `src/config/secrets.local.ts` con el password de Postgres (ese archivo no va a git).
+Editar `.env` con el password de Postgres (ese archivo no va a git). Equivale a `application.properties` + secretos fuera del repo.
 
 ```bash
 npm install
@@ -26,9 +26,18 @@ npm run build
 npm start
 ```
 
-Health: `GET http://localhost:3000/health`
+Health (Actuator): `GET http://localhost:3000/health`  
+Métricas: `GET http://localhost:3000/metrics`  
+Swagger: `http://localhost:3000/swagger-ui`
 
 CRUD solicitudes: `GET|POST /api/solicitudes`, `GET|PUT|DELETE /api/solicitudes/:id` (ver `http/solicitudes.http`).
+
+## Tests
+
+```bash
+npm test
+npm run test:coverage
+```
 
 ## Modelo de datos
 

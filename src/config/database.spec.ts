@@ -1,5 +1,3 @@
-jest.mock('./secrets.local', () => ({ dbPassword: 'test' }));
-
 import { Pool } from 'pg';
 import { appConfig } from './app-config';
 import { createPool, verificarConexion } from './database';
