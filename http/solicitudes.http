@@ -60,3 +60,39 @@ GET http://localhost:3000/api/objetos
 GET http://localhost:3000/api/estados-solicitud
 GET http://localhost:3000/api/prioridades
 GET http://localhost:3000/api/resultados-solicitud
+
+### CRUD objeto
+POST http://localhost:3000/api/objetos
+Content-Type: application/json
+
+{
+  "nombre": "Proyector sala 2"
+}
+
+PUT http://localhost:3000/api/objetos/1
+Content-Type: application/json
+
+{
+  "nombre": "Dell Inspiron 5036"
+}
+
+DELETE http://localhost:3000/api/objetos/1
+
+### CRUD tipo de servicio
+POST http://localhost:3000/api/tipos-servicio
+Content-Type: application/json
+
+{
+  "nombre": "Limpieza de ventiladores",
+  "tipoTecnicoId": 2
+}
+
+### CRUD técnico
+POST http://localhost:3000/api/tecnicos
+Content-Type: application/json
+
+{
+  "nombre": "Sofía Mora",
+  "correo": "sofia.mora@example.com",
+  "tipoTecnicoId": 5
+}

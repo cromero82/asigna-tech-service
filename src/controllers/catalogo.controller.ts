@@ -10,10 +10,22 @@ export class CatalogoController {
 
   register(router: Router): void {
     router.get('/api/tipos-tecnico', this.tiposTecnico);
+    router.post('/api/tipos-tecnico', this.crearTipoTecnico);
+    router.put('/api/tipos-tecnico/:id', this.actualizarTipoTecnico);
+    router.delete('/api/tipos-tecnico/:id', this.eliminarTipoTecnico);
     router.get('/api/servicios', this.servicios);
     router.get('/api/tipos-servicio', this.tiposServicio);
+    router.post('/api/tipos-servicio', this.crearTipoServicio);
+    router.put('/api/tipos-servicio/:id', this.actualizarTipoServicio);
+    router.delete('/api/tipos-servicio/:id', this.eliminarTipoServicio);
     router.get('/api/tecnicos', this.tecnicos);
+    router.post('/api/tecnicos', this.crearTecnico);
+    router.put('/api/tecnicos/:id', this.actualizarTecnico);
+    router.delete('/api/tecnicos/:id', this.eliminarTecnico);
     router.get('/api/objetos', this.objetos);
+    router.post('/api/objetos', this.crearObjeto);
+    router.put('/api/objetos/:id', this.actualizarObjeto);
+    router.delete('/api/objetos/:id', this.eliminarObjeto);
     router.get('/api/estados-solicitud', this.estados);
     router.get('/api/prioridades', this.prioridades);
     router.get('/api/resultados-solicitud', this.resultados);
@@ -156,6 +168,118 @@ export class CatalogoController {
       this.logger.info('CatalogoController.resultados fin');
     }
   };
+
+  private crearTipoTecnico = this.escribir('crearTipoTecnico', 201, (req) =>
+    this.catalogoService.crearTipoTecnico(req.body)
+  );
+  private actualizarTipoTecnico = this.escribirConId(
+    'actualizarTipoTecnico',
+    200,
+    (id, req) => this.catalogoService.actualizarTipoTecnico(id, req.body)
+  );
+  private eliminarTipoTecnico = this.eliminarConId('eliminarTipoTecnico', (id) =>
+    this.catalogoService.eliminarTipoTecnico(id)
+  );
+
+  private crearTipoServicio = this.escribir('crearTipoServicio', 201, (req) =>
+    this.catalogoService.crearTipoServicio(req.body)
+  );
+  private actualizarTipoServicio = this.escribirConId(
+    'actualizarTipoServicio',
+    200,
+    (id, req) => this.catalogoService.actualizarTipoServicio(id, req.body)
+  );
+  private eliminarTipoServicio = this.eliminarConId('eliminarTipoServicio', (id) =>
+    this.catalogoService.eliminarTipoServicio(id)
+  );
+
+  private crearTecnico = this.escribir('crearTecnico', 201, (req) =>
+    this.catalogoService.crearTecnico(req.body)
+  );
+  private actualizarTecnico = this.escribirConId('actualizarTecnico', 200, (id, req) =>
+    this.catalogoService.actualizarTecnico(id, req.body)
+  );
+  private eliminarTecnico = this.eliminarConId('eliminarTecnico', (id) =>
+    this.catalogoService.eliminarTecnico(id)
+  );
+
+  private crearObjeto = this.escribir('crearObjeto', 201, (req) =>
+    this.catalogoService.crearObjeto(req.body)
+  );
+  private actualizarObjeto = this.escribirConId('actualizarObjeto', 200, (id, req) =>
+    this.catalogoService.actualizarObjeto(id, req.body)
+  );
+  private eliminarObjeto = this.eliminarConId('eliminarObjeto', (id) =>
+    this.catalogoService.eliminarObjeto(id)
+  );
+
+  private escribir(
+    accion: string,
+    status: number,
+    ejecutar: (req: Request) => Promise<unknown>
+  ) {
+    return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+      this.logger.info(`CatalogoController.${accion} inicio`);
+      try {
+        res.status(status).json(await ejecutar(req));
+      } catch (error) {
+        this.logger.error({ err: error }, `CatalogoController.${accion} error`);
+        next(error);
+      } finally {
+        this.logger.info(`CatalogoController.${accion} fin`);
+      }
+    };
+  }
+
+  private escribirConId(
+    accion: string,
+    status: number,
+    ejecutar: (id: number, req: Request) => Promise<unknown>
+  ) {
+    return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+      this.logger.info(`CatalogoController.${accion} inicio`);
+      try {
+        const id = this.leerId(req, res);
+        if (id === null) {
+          return;
+        }
+        res.status(status).json(await ejecutar(id, req));
+      } catch (error) {
+        this.logger.error({ err: error }, `CatalogoController.${accion} error`);
+        next(error);
+      } finally {
+        this.logger.info(`CatalogoController.${accion} fin`);
+      }
+    };
+  }
+
+  private eliminarConId(accion: string, ejecutar: (id: number) => Promise<void>) {
+    return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+      this.logger.info(`CatalogoController.${accion} inicio`);
+      try {
+        const id = this.leerId(req, res);
+        if (id === null) {
+          return;
+        }
+        await ejecutar(id);
+        res.status(204).send();
+      } catch (error) {
+        this.logger.error({ err: error }, `CatalogoController.${accion} error`);
+        next(error);
+      } finally {
+        this.logger.info(`CatalogoController.${accion} fin`);
+      }
+    };
+  }
+
+  private leerId(req: Request, res: Response): number | null {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      res.status(400).json({ status: 400, message: 'id inválido' });
+      return null;
+    }
+    return id;
+  }
 
   private leerFiltroOpcional(req: Request, res: Response): number | undefined | false {
     const crudo = req.query.tipoTecnicoId;

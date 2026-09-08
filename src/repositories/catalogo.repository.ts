@@ -6,6 +6,7 @@ import {
   TecnicoItemResponse,
   TipoServicioItemResponse
 } from '../dtos/response/catalogo.response';
+import { RecursoNoEncontradoError } from '../exceptions/recurso-no-encontrado.error';
 
 type ServicioFila = {
   especialidadId: number;
@@ -135,5 +136,157 @@ export class CatalogoRepository {
       [codigo]
     );
     return result.rows[0].id;
+  }
+
+  async crearTipoTecnico(
+    nombre: string,
+    descripcion: string | null
+  ): Promise<CatalogoItemResponse> {
+    const result = await this.pool.query<CatalogoItemResponse>(
+      `INSERT INTO tipo_tecnico (nombre, descripcion) VALUES ($1, $2) RETURNING id, nombre`,
+      [nombre, descripcion]
+    );
+    return result.rows[0];
+  }
+
+  async actualizarTipoTecnico(
+    id: number,
+    nombre: string,
+    descripcion: string | null
+  ): Promise<CatalogoItemResponse> {
+    const result = await this.pool.query<CatalogoItemResponse>(
+      `UPDATE tipo_tecnico
+       SET nombre = $2, descripcion = $3, actualizado_en = now()
+       WHERE id = $1 AND activo = TRUE
+       RETURNING id, nombre`,
+      [id, nombre, descripcion]
+    );
+    const row = result.rows[0];
+    if (!row) {
+      throw new RecursoNoEncontradoError('Especialidad', id);
+    }
+    return row;
+  }
+
+  async borrarLogicoTipoTecnico(id: number): Promise<void> {
+    await this.borrarLogico('tipo_tecnico', 'Especialidad', id);
+  }
+
+  async crearTipoServicio(
+    nombre: string,
+    descripcion: string | null,
+    tipoTecnicoId: number
+  ): Promise<TipoServicioItemResponse> {
+    const result = await this.pool.query<TipoServicioItemResponse>(
+      `INSERT INTO tipo_servicio (nombre, descripcion, tipo_tecnico_id)
+       VALUES ($1, $2, $3)
+       RETURNING id, nombre, tipo_tecnico_id AS "tipoTecnicoId"`,
+      [nombre, descripcion, tipoTecnicoId]
+    );
+    return result.rows[0];
+  }
+
+  async actualizarTipoServicio(
+    id: number,
+    nombre: string,
+    descripcion: string | null,
+    tipoTecnicoId: number
+  ): Promise<TipoServicioItemResponse> {
+    const result = await this.pool.query<TipoServicioItemResponse>(
+      `UPDATE tipo_servicio
+       SET nombre = $2, descripcion = $3, tipo_tecnico_id = $4, actualizado_en = now()
+       WHERE id = $1 AND activo = TRUE
+       RETURNING id, nombre, tipo_tecnico_id AS "tipoTecnicoId"`,
+      [id, nombre, descripcion, tipoTecnicoId]
+    );
+    const row = result.rows[0];
+    if (!row) {
+      throw new RecursoNoEncontradoError('Servicio', id);
+    }
+    return row;
+  }
+
+  async borrarLogicoTipoServicio(id: number): Promise<void> {
+    await this.borrarLogico('tipo_servicio', 'Servicio', id);
+  }
+
+  async crearTecnico(
+    nombre: string,
+    correo: string | null,
+    tipoTecnicoId: number
+  ): Promise<TecnicoItemResponse> {
+    const result = await this.pool.query<TecnicoItemResponse>(
+      `INSERT INTO tecnico (nombre, correo, tipo_tecnico_id)
+       VALUES ($1, $2, $3)
+       RETURNING id, nombre, correo, tipo_tecnico_id AS "tipoTecnicoId"`,
+      [nombre, correo, tipoTecnicoId]
+    );
+    return result.rows[0];
+  }
+
+  async actualizarTecnico(
+    id: number,
+    nombre: string,
+    correo: string | null,
+    tipoTecnicoId: number
+  ): Promise<TecnicoItemResponse> {
+    const result = await this.pool.query<TecnicoItemResponse>(
+      `UPDATE tecnico
+       SET nombre = $2, correo = $3, tipo_tecnico_id = $4, actualizado_en = now()
+       WHERE id = $1 AND activo = TRUE
+       RETURNING id, nombre, correo, tipo_tecnico_id AS "tipoTecnicoId"`,
+      [id, nombre, correo, tipoTecnicoId]
+    );
+    const row = result.rows[0];
+    if (!row) {
+      throw new RecursoNoEncontradoError('Técnico', id);
+    }
+    return row;
+  }
+
+  async borrarLogicoTecnico(id: number): Promise<void> {
+    await this.borrarLogico('tecnico', 'Técnico', id);
+  }
+
+  async crearObjeto(nombre: string): Promise<CatalogoItemResponse> {
+    const result = await this.pool.query<CatalogoItemResponse>(
+      `INSERT INTO objeto (nombre) VALUES ($1) RETURNING id, nombre`,
+      [nombre]
+    );
+    return result.rows[0];
+  }
+
+  async actualizarObjeto(id: number, nombre: string): Promise<CatalogoItemResponse> {
+    const result = await this.pool.query<CatalogoItemResponse>(
+      `UPDATE objeto
+       SET nombre = $2, actualizado_en = now()
+       WHERE id = $1 AND activo = TRUE
+       RETURNING id, nombre`,
+      [id, nombre]
+    );
+    const row = result.rows[0];
+    if (!row) {
+      throw new RecursoNoEncontradoError('Objeto', id);
+    }
+    return row;
+  }
+
+  async borrarLogicoObjeto(id: number): Promise<void> {
+    await this.borrarLogico('objeto', 'Objeto', id);
+  }
+
+  private async borrarLogico(
+    tabla: 'tipo_tecnico' | 'tipo_servicio' | 'tecnico' | 'objeto',
+    recurso: string,
+    id: number
+  ): Promise<void> {
+    const result = await this.pool.query(
+      `UPDATE ${tabla} SET activo = FALSE, actualizado_en = now()
+       WHERE id = $1 AND activo = TRUE`,
+      [id]
+    );
+    if (result.rowCount === 0) {
+      throw new RecursoNoEncontradoError(recurso, id);
+    }
   }
 }
