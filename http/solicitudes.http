@@ -1,0 +1,62 @@
+### Listar solicitudes
+GET http://localhost:3000/api/solicitudes
+
+### Obtener por id
+GET http://localhost:3000/api/solicitudes/1
+
+### Crear sin técnico (estado PENDIENTE)
+POST http://localhost:3000/api/solicitudes
+Content-Type: application/json
+
+{
+  "titulo": "Revisar encendido de Laptop",
+  "descripcion": "No enciende en sala informática",
+  "observaciones": null,
+  "tipoTecnicoId": 2,
+  "tipoServicioId": 3,
+  "tecnicoId": null,
+  "objetoId": 3
+}
+
+### Crear asignada (Ana López, impresoras)
+POST http://localhost:3000/api/solicitudes
+Content-Type: application/json
+
+{
+  "titulo": "Mantenimiento impresora HP",
+  "descripcion": "Atasco de papel",
+  "observaciones": "Revisar bandeja",
+  "tipoTecnicoId": 1,
+  "tipoServicioId": 1,
+  "tecnicoId": 2,
+  "objetoId": 2
+}
+
+### Actualizar
+PUT http://localhost:3000/api/solicitudes/1
+Content-Type: application/json
+
+{
+  "titulo": "Revisar encendido de Laptop",
+  "descripcion": "No enciende",
+  "observaciones": "Asignar a Pedro",
+  "tipoTecnicoId": 2,
+  "tipoServicioId": 3,
+  "tecnicoId": 1,
+  "objetoId": 3,
+  "estadoId": 2,
+  "prioridadId": 2,
+  "resultadoId": null
+}
+
+### Eliminar (borrado lógico)
+DELETE http://localhost:3000/api/solicitudes/1
+
+### Catálogos
+GET http://localhost:3000/api/tipos-tecnico
+GET http://localhost:3000/api/tipos-servicio?tipoTecnicoId=1
+GET http://localhost:3000/api/tecnicos?tipoTecnicoId=1
+GET http://localhost:3000/api/objetos
+GET http://localhost:3000/api/estados-solicitud
+GET http://localhost:3000/api/prioridades
+GET http://localhost:3000/api/resultados-solicitud

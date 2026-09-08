@@ -44,8 +44,16 @@ jspm_packages/
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
-# TypeScript cache
+# TypeScript cache and build
 *.tsbuildinfo
+/dist/
+
+# Local DB password (never commit)
+src/config/secrets.local.ts
+
+# Este repo documenta comandos en Markdown (el gitignore global ignora *.md)
+!*.md
+!/**/*.md
 
 # Optional npm cache directory
 .npm
