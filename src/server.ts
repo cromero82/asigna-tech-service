@@ -18,7 +18,10 @@ async function main(): Promise<void> {
 
   const app = createApp(container);
   const server = app.listen(appConfig.port, () => {
-    logger.info({ port: appConfig.port }, 'asigna-tech-service en escucha');
+    logger.info(
+      { port: appConfig.port, swaggerUi: `http://localhost:${appConfig.port}/swagger-ui` },
+      'asigna-tech-service en escucha'
+    );
   });
 
   const shutdown = async (signal: string): Promise<void> => {
