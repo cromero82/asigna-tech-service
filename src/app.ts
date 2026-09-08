@@ -1,9 +1,11 @@
+import cors from 'cors';
 import express, { Express, Router } from 'express';
 import { AppContainer } from './config/container';
 import { unhandledErrorMiddleware } from './middlewares/unhandled-error.middleware';
 
 export function createApp(container: AppContainer): Express {
   const app = express();
+  app.use(cors({ origin: 'http://localhost:4200' }));
   app.use(express.json());
 
   const router = Router();
