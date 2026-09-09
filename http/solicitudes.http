@@ -1,0 +1,122 @@
+# Swagger UI (probar endpoints)
+# http://localhost:3000/swagger-ui
+# OpenAPI JSON: http://localhost:3000/v3/api-docs
+
+### Listar solicitudes
+GET http://localhost:3000/api/solicitudes
+
+### Obtener por id
+GET http://localhost:3000/api/solicitudes/1
+
+### Crear sin técnico (estado PENDIENTE)
+POST http://localhost:3000/api/solicitudes
+Content-Type: application/json
+
+{
+  "titulo": "Revisar encendido de Laptop",
+  "descripcion": "No enciende en sala informática",
+  "observaciones": null,
+  "tipoTecnicoId": 2,
+  "tipoServicioId": 3,
+  "tecnicoId": null
+}
+
+### Crear asignada (Ana López, impresoras)
+POST http://localhost:3000/api/solicitudes
+Content-Type: application/json
+
+{
+  "titulo": "Mantenimiento impresora HP",
+  "descripcion": "Atasco de papel",
+  "observaciones": "Revisar bandeja",
+  "tipoTecnicoId": 1,
+  "tipoServicioId": 1,
+  "tecnicoId": 2,
+  "objetoId": 2
+}
+
+### Actualizar
+PUT http://localhost:3000/api/solicitudes/1
+Content-Type: application/json
+
+{
+  "titulo": "Revisar encendido de Laptop",
+  "descripcion": "No enciende",
+  "observaciones": "Asignar a Pedro",
+  "tipoTecnicoId": 2,
+  "tipoServicioId": 3,
+  "tecnicoId": 1,
+  "objetoId": 3,
+  "estadoId": 2,
+  "prioridadId": 2,
+  "resultadoId": null
+}
+
+### 400 — título vacío
+POST http://localhost:3000/api/solicitudes
+Content-Type: application/json
+
+{
+  "titulo": "",
+  "tipoTecnicoId": 2,
+  "tipoServicioId": 3
+}
+
+### 412 — tipo de servicio de otra especialidad
+POST http://localhost:3000/api/solicitudes
+Content-Type: application/json
+
+{
+  "titulo": "Servicio cruzado",
+  "tipoTecnicoId": 1,
+  "tipoServicioId": 3
+}
+
+### Eliminar (borrado lógico)
+DELETE http://localhost:3000/api/solicitudes/1
+
+### Catálogos
+GET http://localhost:3000/api/servicios
+GET http://localhost:3000/api/tipos-tecnico
+GET http://localhost:3000/api/tipos-servicio?tipoTecnicoId=1
+GET http://localhost:3000/api/tecnicos?tipoTecnicoId=1
+GET http://localhost:3000/api/objetos
+GET http://localhost:3000/api/estados-solicitud
+GET http://localhost:3000/api/prioridades
+GET http://localhost:3000/api/resultados-solicitud
+
+### CRUD objeto
+POST http://localhost:3000/api/objetos
+Content-Type: application/json
+
+{
+  "nombre": "Proyector sala 2"
+}
+
+PUT http://localhost:3000/api/objetos/1
+Content-Type: application/json
+
+{
+  "nombre": "Dell Inspiron 5036"
+}
+
+DELETE http://localhost:3000/api/objetos/1
+
+### CRUD tipo de servicio
+POST http://localhost:3000/api/tipos-servicio
+Content-Type: application/json
+
+{
+  "nombre": "Limpieza de ventiladores",
+  "tipoTecnicoId": 2
+}
+
+### CRUD técnico
+POST http://localhost:3000/api/tecnicos
+Content-Type: application/json
+
+{
+  "nombre": "Sofía Mora",
+  "correo": "sofia.mora@example.com",
+  "tipoTecnicoId": 5
+}
